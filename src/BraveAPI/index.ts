@@ -1,6 +1,7 @@
 import type { Endpoints } from './types.js';
 import config from '../config.js';
 import { stringify } from '../utils.js';
+import { requestContext } from '../context.js';
 
 const typeToPathMap: Record<keyof Endpoints, string> = {
   images: '/res/v1/images/search',
@@ -13,10 +14,13 @@ const typeToPathMap: Record<keyof Endpoints, string> = {
 };
 
 const getDefaultRequestHeaders = (): Record<string, string> => {
+  // Per-request key (from HTTP headers) takes priority over global config
+  const ctx = requestContext.getStore();
+  const apiKey = ctx?.braveApiKey || config.braveApiKey;
   return {
     Accept: 'application/json',
     'Accept-Encoding': 'gzip',
-    'X-Subscription-Token': config.braveApiKey,
+    'X-Subscription-Token': apiKey,
   };
 };
 

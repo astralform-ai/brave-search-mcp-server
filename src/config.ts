@@ -145,7 +145,7 @@ export function getOptions(): Configuration | false {
     return false;
   }
 
-  if (!options.braveApiKey) {
+  if (!options.braveApiKey && options.transport !== 'http') {
     console.error(
       'Error: --brave-api-key is required. You can get one at https://brave.com/search/api/.'
     );

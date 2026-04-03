@@ -104,8 +104,8 @@ Generates AI-powered summaries from web search results using Brave's summarizati
 
 1. Sign up for a [Brave Search API account](https://brave.com/search/api/)
 2. Choose a plan:
-   - **Free**: 2,000 queries/month, basic web search
-   - **Pro**: Enhanced features including local search, AI summaries, extra snippets
+    - **Search**: The real-time search data your chatbots & agents need to generate answers. Complete search results (URLs, text, news, images, and more), with additional LLM context optimized for AI.
+    - **Answers**: Summarized, completed answers to any question. Answers grounded on a single search or multiple searches for better accuracy & reduced hallucinations.
 3. Generate your API key from the [developer dashboard](https://api-dashboard.search.brave.com/app/keys)
 
 ### Environment Variables

@@ -223,9 +223,9 @@ export const params = z.object({
     .describe("Result filter (default ['web', 'query'])")
     .optional(),
   goggles: z
-    .array(z.string())
+    .union([z.string(), z.array(z.string())])
     .describe(
-      "Goggles act as a custom re-ranking on top of Brave's search index. The parameter supports both a url where the Goggle is hosted or the definition of the Goggle. For more details, refer to the Goggles repository (i.e., https://github.com/brave/goggles-quickstart)."
+      "Goggles act as a custom re-ranking on top of Brave's search index. The parameter supports both a url where the Goggle is hosted or the definition of the Goggle. Multiple goggle URLs and/or definitions can be provided in an array. For more details, refer to the Goggles repository (i.e., https://github.com/brave/goggles-quickstart)."
     )
     .optional(),
   units: z

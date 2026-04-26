@@ -191,7 +191,9 @@ export const RequestParamsSchema = z.object({
     .optional(),
   goggles: z
     .union([z.string(), z.array(z.string())])
-    .describe('The goggle url(s) or definition(s) to rerank search results.')
+    .describe(
+      "Goggles act as a custom re-ranking on top of Brave's search index. The parameter supports both a url where the Goggle is hosted or the definition of the Goggle. Multiple goggle URLs and/or definitions can be provided in an array. For more details, refer to the Goggles repository (i.e., https://github.com/brave/goggles-quickstart)."
+    )
     .optional(),
   freshness: FreshnessSchema.optional(),
   enable_local: z

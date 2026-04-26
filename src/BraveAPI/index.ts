@@ -21,13 +21,23 @@ const getDefaultRequestHeaders = (): Record<string, string> => {
   };
 };
 
-const isValidGoggleURL = (url: string) => {
+const isValidGoggleURL = (url: string): boolean => {
   try {
     // Only allow HTTPS URLs
     return new URL(url).protocol === 'https:';
   } catch {
     return false;
   }
+};
+
+const normalizeGoggle = (value: unknown): string | null => {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+  if (/^https?:\/\//i.test(trimmed)) {
+    return isValidGoggleURL(trimmed) ? trimmed : null;
+  }
+  return trimmed;
 };
 
 async function issueRequest<T extends keyof Endpoints>(
@@ -81,11 +91,11 @@ async function issueRequest<T extends keyof Endpoints>(
 
     // Handle `goggles` parameter(s)
     if (key === 'goggles') {
-      if (typeof value === 'string') {
-        queryParams.set(key, value);
-      } else if (Array.isArray(value)) {
-        for (const url of value.filter(isValidGoggleURL)) {
-          queryParams.append(key, url);
+      const candidates = Array.isArray(value) ? value : [value];
+      for (const candidate of candidates) {
+        const normalized = normalizeGoggle(candidate);
+        if (normalized !== null) {
+          queryParams.append(key, normalized);
         }
       }
       continue;

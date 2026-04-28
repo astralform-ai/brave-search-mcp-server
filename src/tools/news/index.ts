@@ -28,7 +28,7 @@ export const description = `
         - "According to [Reuters](https://www.reuters.com/technology/china-bans/), China bans uncertified and recalled power banks on planes".
         - "The [New York Times](https://www.nytimes.com/2025/06/27/us/technology/ev-sales.html) reports that Tesla's EV sales have increased by 20%".
         - "According to [BBC News](https://www.bbc.com/news/world-europe-65910000), the UK government has announced a new policy to support renewable energy".
-`;
+`.trim();
 
 export const execute = async (params: QueryParams) => {
   const response = await API.issueRequest<'news'>('news', params);

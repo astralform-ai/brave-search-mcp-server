@@ -19,7 +19,7 @@ export const description = `
         - Useful for discovering video content, getting video metadata, or finding videos from specific creators/publishers.
 
     Returns a JSON list of video-related results with title, url, description, duration, and thumbnail_url.
-`;
+`.trim();
 
 export const execute = async (params: QueryParams) => {
   const response = await API.issueRequest<'videos'>('videos', params);

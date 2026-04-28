@@ -13,6 +13,8 @@ import type {
   LocalPoiSearchApiResponse,
   LocalDescriptionsSearchApiResponse,
 } from '../tools/local/types.js';
+import type { LlmQueryParams, LlmRequestHeaders } from '../tools/llm_context/schemas/input.js';
+import type { LlmContextSearchApiResponse } from '../tools/llm_context/schemas/output.js';
 
 export interface RateLimitErrorResponse {
   type: 'ErrorResponse';
@@ -68,5 +70,10 @@ export type Endpoints = {
     params: SummarizerQueryParams;
     response: SummarizerSearchApiResponse;
     requestHeaders: Headers;
+  };
+  llmContext: {
+    params: LlmQueryParams;
+    response: LlmContextSearchApiResponse;
+    requestHeaders: LlmRequestHeaders;
   };
 };

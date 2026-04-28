@@ -11,6 +11,7 @@ const typeToPathMap: Record<keyof Endpoints, string> = {
   videos: '/res/v1/videos/search',
   web: '/res/v1/web/search',
   summarizer: '/res/v1/summarizer/search',
+  llmContext: '/res/v1/llm/context',
 };
 
 const getDefaultRequestHeaders = (): Record<string, string> => {
@@ -24,13 +25,23 @@ const getDefaultRequestHeaders = (): Record<string, string> => {
   };
 };
 
-const isValidGoggleURL = (url: string) => {
+const isValidGoggleURL = (url: string): boolean => {
   try {
     // Only allow HTTPS URLs
     return new URL(url).protocol === 'https:';
   } catch {
     return false;
   }
+};
+
+const normalizeGoggle = (value: unknown): string | null => {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+  if (/^https?:\/\//i.test(trimmed)) {
+    return isValidGoggleURL(trimmed) ? trimmed : null;
+  }
+  return trimmed;
 };
 
 async function issueRequest<T extends keyof Endpoints>(
@@ -63,11 +74,18 @@ async function issueRequest<T extends keyof Endpoints>(
 
     // Handle `result_filter` parameter
     if (key === 'result_filter') {
-      // Handle special behavior of 'summary' parameter:
-      // Requires `result_filter` to be empty, or only contain 'summarizer'
-      // see: https://bravesoftware.slack.com/archives/C01NNFM9XMM/p1751654841090929
+      /**
+       * Handle special behavior of 'summary' parameter:
+       * When 'summary' is true, we need to either set result_filter to
+       * 'summarizer', or leave it excluded entirely. This is due to a known
+       * bug in the now-deprecated Summarizer endpoint. Setting it to
+       * 'summarizer' will result in no web results being returned, which is
+       * not ideal. As such, we skip the parameter entirely.
+       * See https://github.com/brave/brave-search-mcp-server/issues/272 and
+       * https://bravesoftware.slack.com/archives/C01NNFM9XMM/p1751654841090929
+       */
       if ('summary' in parameters && parameters.summary === true) {
-        queryParams.set(key, 'summarizer');
+        continue;
       } else if (Array.isArray(value) && value.length > 0) {
         queryParams.set(key, value.join(','));
       }
@@ -77,24 +95,29 @@ async function issueRequest<T extends keyof Endpoints>(
 
     // Handle `goggles` parameter(s)
     if (key === 'goggles') {
-      if (typeof value === 'string') {
-        queryParams.set(key, value);
-      } else if (Array.isArray(value)) {
-        for (const url of value.filter(isValidGoggleURL)) {
-          queryParams.append(key, url);
+      const candidates = Array.isArray(value) ? value : [value];
+      for (const candidate of candidates) {
+        const normalized = normalizeGoggle(candidate);
+        if (normalized !== null) {
+          queryParams.append(key, normalized);
         }
       }
       continue;
     }
 
-    if (value !== undefined) {
+    if (value !== undefined && value !== null) {
       queryParams.set(key === 'query' ? 'q' : key, value.toString());
     }
   }
 
   // Issue Request
   const urlWithParams = url.toString() + '?' + queryParams.toString();
-  const headers = { ...getDefaultRequestHeaders(), ...requestHeaders } as Headers;
+  const headers = new Headers(getDefaultRequestHeaders());
+  for (const [key, value] of Object.entries(requestHeaders)) {
+    if (value === undefined || value === null) continue;
+    headers.set(key, String(value));
+  }
+
   const response = await fetch(urlWithParams, { headers });
 
   // Handle Error

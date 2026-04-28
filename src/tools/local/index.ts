@@ -28,7 +28,7 @@ export const description = `
         - Phone numbers and opening hours
 
     Use this when the query implies 'near me', 'in my area', or mentions specific locations (e.g., 'in San Francisco'). This tool automatically falls back to brave_web_search if no local results are found.
-`;
+`.trim();
 
 // Access to Local API is available through the Pro plans.
 export const execute = async (params: WebQueryParams) => {

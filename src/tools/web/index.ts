@@ -36,7 +36,7 @@ export const description = `
     Returns a JSON list of web results with title, description, and URL.
     
     When the "results_filter" parameter is empty, JSON results may also contain FAQ, Discussions, News, and Video results.
-`;
+`.trim();
 
 export const execute = async (params: QueryParams) => {
   const response = { content: [] as TextContent[], isError: false };

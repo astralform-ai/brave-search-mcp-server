@@ -1,6 +1,6 @@
 # Brave Search MCP Server
 
-An MCP server implementation that integrates the Brave Search API, providing comprehensive search capabilities including web search, local business search, image search, video search, news search, and AI-powered summarization. This project supports both STDIO and HTTP transports, with STDIO as the default mode.
+An MCP server implementation that integrates the Brave Search API, providing comprehensive search capabilities including web search, local business search, image search, video search, news search, LLM context, and AI-powered summarization. This project supports both STDIO and HTTP transports, with STDIO as the default mode.
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/brave/brave-search-mcp-server)
 
@@ -98,6 +98,39 @@ Generates AI-powered summaries from web search results using Brave's summarizati
 
 **Usage:** First perform a web search with `summary: true`, then use the returned summary key with this tool.
 
+### LLM Context (`brave_llm_context`)
+Retrieves pre-extracted web content optimized for AI agents, LLM grounding, and RAG pipelines.
+
+**Parameters:**
+- `query` (string, required): Search query (max 400 chars, 50 words)
+- `country` (string, optional): Search country code
+- `search_lang` (string, optional): Search language code
+- `count` (number, optional): Maximum number of search results considered (1-50)
+- `spellcheck` (boolean, optional): Enable spell checking
+- `maximum_number_of_urls` (number, optional): Maximum number of URLs to include (1-50)
+- `maximum_number_of_tokens` (number, optional): Approximate maximum number of context tokens (1024-32768)
+- `maximum_number_of_snippets` (number, optional): Maximum number of snippets to include (1-256)
+- `context_threshold_mode` (string, optional): Threshold mode ("disabled", "strict", "lenient", "balanced")
+- `maximum_number_of_tokens_per_url` (number, optional): Maximum tokens per URL (512-8192)
+- `maximum_number_of_snippets_per_url` (number, optional): Maximum snippets per URL (1-100)
+- `goggles` (string or array, optional): Goggle URL or definition for custom re-ranking
+- `freshness` (string, optional): Time filter ("pd", "pw", "pm", "py", or date range)
+- `enable_local` (boolean, optional): Enable local recall
+- `enable_source_metadata` (boolean, optional): Include source metadata enrichment
+
+**Optional request headers:**
+- `x-loc-lat` (number, optional): Client latitude (-90 to 90)
+- `x-loc-long` (number, optional): Client longitude (-180 to 180)
+- `x-loc-city` (string, optional): Client city name
+- `x-loc-state` (string, optional): Client state or region code
+- `x-loc-state-name` (string, optional): Client state or region name
+- `x-loc-country` (string, optional): Client country code
+- `x-loc-postal-code` (string, optional): Client postal code
+- `api-version` (string, optional): Brave API version (`YYYY-MM-DD`)
+- `accept` (string, optional): Response media type ("application/json" or "*/*")
+- `cache-control` (string, optional): Use `no-cache` to request fresh content
+- `user-agent` (string, optional): User agent originating the request
+
 ## Configuration
 
 ### Getting an API Key
@@ -117,8 +150,8 @@ The server supports the following environment variables:
 - `BRAVE_MCP_PORT`: HTTP server port (default: 8000)
 - `BRAVE_MCP_HOST`: HTTP server host (default: "0.0.0.0")
 - `BRAVE_MCP_LOG_LEVEL`: Desired logging level("debug", "info", "notice", "warning", "error", "critical", "alert", or "emergency", default: "info")
-- `BRAVE_MCP_ENABLED_TOOLS`: When used, specifies a whitelist for supported tools
-- `BRAVE_MCP_DISABLED_TOOLS`: When used, specifies a blacklist for supported tools
+- `BRAVE_MCP_ENABLED_TOOLS`: When used, specifies a space-separated whitelist for supported tools
+- `BRAVE_MCP_DISABLED_TOOLS`: When used, specifies a space-separated blacklist for supported tools
 - `BRAVE_MCP_STATELESS`: HTTP stateless mode (default: "true").  When running on Amazon Bedrock Agentcore, set to "true".
 
 ### Command Line Options

@@ -24,7 +24,7 @@ export const description = `
     Returns a text summary that consolidates information from the search results. Optional features include inline references to source URLs and additional entity information.
 
     Requirements: Must first perform a web search using brave_web_search with summary=true parameter. Requires a Pro AI subscription to access the summarizer functionality.
-`;
+`.trim();
 
 export const execute = async (params: SummarizerQueryParams) => {
   const response: CallToolResult = { content: [], isError: false };
